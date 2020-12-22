@@ -47,6 +47,12 @@ message Tracing {
     string address = 1;
   }
 
+  // Skywalking defines configuration for a Skywalking tracer.
+  message Skywalking {
+    // Address of the Skywalking service (e.g. _skywalking-oap:11800_).
+    string address = 1;
+  }
+
   // Defines configuration for a Lightstep tracer.
   message Lightstep {
     // Address of the Lightstep Satellite pool.
@@ -131,14 +137,16 @@ message Tracing {
   oneof tracer {
     // Use a Zipkin tracer.
     Zipkin zipkin = 1;
+    // Use a Skywalking tracer.
+    Skywalking skywalking = 2;
     // Use a Lightstep tracer.
-    Lightstep lightstep = 2;
+    Lightstep lightstep = 3;
     // Use a Datadog tracer.
-    Datadog datadog = 3;
+    Datadog datadog = 4;
     // Use a Stackdriver tracer.
-    Stackdriver stackdriver = 4;
+    Stackdriver stackdriver = 5;
     // Use an OpenCensus tracer exporting to an OpenCensus agent.
-    OpenCensusAgent open_census_agent = 9;
+    OpenCensusAgent open_census_agent = 6;
   }
 
   // Configure custom tags that will be added to any active span.
@@ -337,44 +345,48 @@ message ProxyConfig {
   // DEPRECATED: Use [tracing][istio.mesh.v1alpha1.ProxyConfig.tracing] instead.
   string zipkin_address = 8 [deprecated=true];
 
+  // Address of the Skywalking service (e.g. _Skywalking:11800_).
+  // DEPRECATED: Use [tracing][istio.mesh.v1alpha1.ProxyConfig.tracing] instead.
+  string Skywalking_address = 9 [deprecated=true];
+
   reserved "connect_timeout";
-  reserved 9;
+  reserved 10;
 
   // IP Address and Port of a statsd UDP listener (e.g. `10.75.241.127:9125`).
-  string statsd_udp_address = 10;
+  string statsd_udp_address = 11;
 
   // $hide_from_docs
   string envoy_metrics_service_address = 20 [deprecated=true];
 
   // Port on which Envoy should listen for administrative commands.
   // Default port is `15000`.
-  int32 proxy_admin_port = 11;
+  int32 proxy_admin_port = 12;
 
   // $hide_from_docs
-  string availability_zone = 12 [deprecated=true];
+  string availability_zone = 13 [deprecated=true];
 
   // AuthenticationPolicy defines how the proxy is authenticated when it connects to the control plane.
   // Default is set to `MUTUAL_TLS`.
-  AuthenticationPolicy control_plane_auth_policy = 13;
+  AuthenticationPolicy control_plane_auth_policy = 14;
   // File path of custom proxy configuration, currently used by proxies
   // in front of Mixer and Pilot.
-  string custom_config_file = 14;
+  string custom_config_file = 15;
 
   // Maximum length of name field in Envoy's metrics. The length of the name field
   // is determined by the length of a name field in a service and the set of labels that
   // comprise a particular version of the service. The default value is set to 189 characters.
   // Envoy's internal metrics take up 67 characters, for a total of 256 character name per metric.
   // Increase the value of this field if you find that the metrics from Envoys are truncated.
-  int32 stat_name_length = 15;
+  int32 stat_name_length = 16;
 
   // The number of worker threads to run.
   // If unset, this will be automatically determined based on CPU requests/limits.
   // If set to 0, all cores on the machine will be used.
   // Default is 2 worker threads.
-  google.protobuf.Int32Value concurrency = 16;
+  google.protobuf.Int32Value concurrency = 17;
 
   // Path to the proxy bootstrap template file
-  string proxy_bootstrap_template_path = 17;
+  string proxy_bootstrap_template_path = 18;
 
   // The mode used to redirect inbound traffic to Envoy.
   // This setting has no effect on outbound traffic: iptables `REDIRECT` is always used for
@@ -391,28 +403,28 @@ message ProxyConfig {
   }
 
   // The mode used to redirect inbound traffic to Envoy.
-  InboundInterceptionMode interception_mode = 18;
+  InboundInterceptionMode interception_mode = 19;
 
   // Tracing configuration to be used by the proxy.
-  Tracing tracing = 19;
+  Tracing tracing = 21;
 
   // Secret Discovery Service(SDS) configuration to be used by the proxy.
-  SDS sds = 21;
+  SDS sds = 22;
 
   // Address of the service to which access logs from Envoys should be
   // sent. (e.g. `accesslog-service:15000`). See [Access Log
   // Service](https://www.envoyproxy.io/docs/envoy/latest/api-v2/config/accesslog/v2/als.proto)
   // for details about Envoy's gRPC Access Log Service API.
-  RemoteService envoy_access_log_service = 22;
+  RemoteService envoy_access_log_service = 23;
 
   // Address of the Envoy Metrics Service implementation (e.g. `metrics-service:15000`).
   // See [Metric Service](https://www.envoyproxy.io/docs/envoy/latest/api-v2/config/metrics/v2/metrics_service.proto)
   // for details about Envoy's Metrics Service API.
-  RemoteService envoy_metrics_service = 23;
+  RemoteService envoy_metrics_service = 24;
 
   // Additional environment variables for the proxy.
   // Names starting with ISTIO_META_ will be included in the generated bootstrap and sent to the XDS server.
-  map<string,string> proxy_metadata = 24;
+  map<string,string> proxy_metadata = 25;
 
   // Port on which the agent should listen for administrative commands such as readiness probe.
   // Default is set to port `15020`.
